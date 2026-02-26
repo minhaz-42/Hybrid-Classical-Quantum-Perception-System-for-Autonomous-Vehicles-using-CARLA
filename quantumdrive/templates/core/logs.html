@@ -1,0 +1,77 @@
+{% extends "base.html" %}{% comment %}Data Logs — Decision table + CSV export.{% endcomment %}
+
+{% block title %}Logs — QuantumDrive{% endblock %}
+{% block nav_logs %}active{% endblock %}
+{% block page_title %}Data Logs{% endblock %}
+{% block page_subtitle %}Browse and export decision history{% endblock %}
+
+{% block content %}
+<div class="clay-card">
+    <div class="card-header">
+        <h3 class="card-title">📋 Decision Log — Last 100 Entries</h3>
+        <div class="card-actions">
+            <select class="select-input clay-select select-small" id="logFilterModel" onchange="QD.loadLogs()">
+                <option value="">All Models</option>
+                <option value="classical">Classical</option>
+                <option value="quantum">Quantum</option>
+            </select>
+            <button class="btn btn-primary clay-btn" onclick="QD.exportCSV()">
+                <span class="btn-icon">📥</span> Export CSV
+            </button>
+            <button class="btn btn-outline clay-btn" onclick="QD.loadLogs()">
+                <span class="btn-icon">🔄</span> Refresh
+            </button>
+        </div>
+    </div>
+    <div class="card-body table-wrapper">
+        <table class="data-table" id="logsTable">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Model</th>
+                    <th>Decision</th>
+                    <th>Confidence</th>
+                    <th>Steering Err</th>
+                    <th>Lane Dev</th>
+                    <th>Collision</th>
+                    <th>Weather</th>
+                    <th>Timestamp</th>
+                </tr>
+            </thead>
+            <tbody id="logsBody">
+                <tr>
+                    <td colspan="9" class="table-empty">No data yet. Start a simulation to generate logs.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ─── Summary Stats ─── -->
+<div class="grid grid-4">
+    <div class="clay-card metric-card">
+        <div class="card-body">
+            <div class="metric-label">Total Entries</div>
+            <div class="metric-value" id="logTotalEntries">0</div>
+        </div>
+    </div>
+    <div class="clay-card metric-card">
+        <div class="card-body">
+            <div class="metric-label">Avg Confidence</div>
+            <div class="metric-value" id="logAvgConfidence">0.00</div>
+        </div>
+    </div>
+    <div class="clay-card metric-card">
+        <div class="card-body">
+            <div class="metric-label">Collisions</div>
+            <div class="metric-value collision-value" id="logCollisions">0</div>
+        </div>
+    </div>
+    <div class="clay-card metric-card">
+        <div class="card-body">
+            <div class="metric-label">Avg Lane Deviation</div>
+            <div class="metric-value" id="logAvgDeviation">0.00</div>
+        </div>
+    </div>
+</div>
+{% endblock %}

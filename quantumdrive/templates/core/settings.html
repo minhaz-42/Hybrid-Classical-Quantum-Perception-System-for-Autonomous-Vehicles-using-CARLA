@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+{% block title %}Settings — QuantumDrive{% endblock %}
+{% block nav_settings %}active{% endblock %}
+{% block page_title %}Settings{% endblock %}
+{% block page_subtitle %}System configuration and preferences{% endblock %}
+
+{% block content %}
+<div class="grid grid-2">
+    <!-- ─── Simulation Settings ─── -->
+    <div class="clay-card">
+        <div class="card-header">
+            <h3 class="card-title">⚙️ Simulation Settings</h3>
+        </div>
+        <div class="card-body settings-body">
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h4 class="setting-title">Polling Interval</h4>
+                    <p class="setting-desc">How often the dashboard fetches vehicle state (ms)</p>
+                </div>
+                <div class="setting-control">
+                    <select class="select-input clay-select" id="settingPollInterval">
+                        <option value="500">500ms</option>
+                        <option value="1000" selected>1000ms</option>
+                        <option value="2000">2000ms</option>
+                        <option value="5000">5000ms</option>
+                    </select>
+                </div>
+            </div>
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h4 class="setting-title">Chart Max Points</h4>
+                    <p class="setting-desc">Number of data points shown on real-time charts</p>
+                </div>
+                <div class="setting-control">
+                    <select class="select-input clay-select" id="settingMaxPoints">
+                        <option value="30">30</option>
+                        <option value="60" selected>60</option>
+                        <option value="100">100</option>
+                        <option value="200">200</option>
+                    </select>
+                </div>
+            </div>
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h4 class="setting-title">Auto-start Simulation</h4>
+                    <p class="setting-desc">Automatically begin simulation on page load</p>
+                </div>
+                <div class="setting-control">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="settingAutoStart">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── Quantum Configuration ─── -->
+    <div class="clay-card">
+        <div class="card-header">
+            <h3 class="card-title">⚛️ Quantum Configuration</h3>
+        </div>
+        <div class="card-body settings-body">
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h4 class="setting-title">Quantum Layer</h4>
+                    <p class="setting-desc">Enable the Variational Quantum Classifier</p>
+                </div>
+                <div class="setting-control">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="settingQuantumEnabled" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h4 class="setting-title">Noise Simulation</h4>
+                    <p class="setting-desc">Add decoherence noise to quantum circuit</p>
+                </div>
+                <div class="setting-control">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="settingNoise" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h4 class="setting-title">Noise Strength</h4>
+                    <p class="setting-desc">Standard deviation of depolarising noise</p>
+                </div>
+                <div class="setting-control">
+                    <select class="select-input clay-select" id="settingNoiseStrength">
+                        <option value="0.01">0.01 (Low)</option>
+                        <option value="0.04" selected>0.04 (Default)</option>
+                        <option value="0.08">0.08 (High)</option>
+                        <option value="0.15">0.15 (Extreme)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ─── Display Preferences ─── -->
+<div class="clay-card">
+    <div class="card-header">
+        <h3 class="card-title">🎨 Display Preferences</h3>
+    </div>
+    <div class="card-body settings-body">
+        <div class="settings-grid">
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h4 class="setting-title">Smooth Animations</h4>
+                    <p class="setting-desc">Enable smooth value transitions</p>
+                </div>
+                <div class="setting-control">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="settingAnimations" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h4 class="setting-title">Compact Mode</h4>
+                    <p class="setting-desc">Reduce padding for more content visibility</p>
+                </div>
+                <div class="setting-control">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="settingCompact">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ─── Data Management ─── -->
+<div class="clay-card">
+    <div class="card-header">
+        <h3 class="card-title">💾 Data Management</h3>
+    </div>
+    <div class="card-body">
+        <div class="data-actions">
+            <button class="btn btn-primary clay-btn" onclick="QD.exportCSV()">
+                <span>📥</span> Export All Data (CSV)
+            </button>
+            <button class="btn btn-outline clay-btn" onclick="QD.loadLogs()">
+                <span>🔄</span> Refresh All Data
+            </button>
+            <button class="btn btn-danger clay-btn" onclick="if(confirm('Clear all simulation data?'))alert('Would clear data in production')">
+                <span>🗑️</span> Clear Simulation Data
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}

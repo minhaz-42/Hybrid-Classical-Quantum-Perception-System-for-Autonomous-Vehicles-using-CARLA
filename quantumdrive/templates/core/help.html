@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% block title %}Help Center — QuantumDrive{% endblock %}
+{% block nav_help %}active{% endblock %}
+{% block page_title %}Help Center{% endblock %}
+{% block page_subtitle %}Guides, tips and system documentation{% endblock %}
+
+{% block content %}
+<!-- Search -->
+<div class="clay-card help-search-card">
+    <div class="card-body" style="text-align:center;padding:2.5rem 1.5rem;">
+        <h2 style="margin-bottom:.5rem;font-size:1.6rem;">How can we help?</h2>
+        <p style="color:var(--text-muted);margin-bottom:1.5rem;">Search through our guides and documentation</p>
+        <div style="max-width:32rem;margin:0 auto;position:relative;">
+            <input type="text" class="clay-input" id="helpSearch" placeholder="Search topics…" style="width:100%;padding-right:3rem;" oninput="filterHelp(this.value)">
+            <span style="position:absolute;right:1rem;top:50%;transform:translateY(-50%);font-size:1.2rem;">🔍</span>
+        </div>
+    </div>
+</div>
+
+<!-- Quick-start cards -->
+<div class="grid grid-3">
+    <div class="clay-card help-topic" data-topic="getting started simulation basics">
+        <div class="card-body" style="text-align:center;padding:2rem 1.5rem;">
+            <div class="help-icon" style="font-size:2.4rem;margin-bottom:.75rem;">🚀</div>
+            <h3 class="card-title">Getting Started</h3>
+            <p class="help-desc">Launch your first simulation in under 2 minutes</p>
+        </div>
+    </div>
+    <div class="clay-card help-topic" data-topic="quantum computation circuit VQC">
+        <div class="card-body" style="text-align:center;padding:2rem 1.5rem;">
+            <div class="help-icon" style="font-size:2.4rem;margin-bottom:.75rem;">⚛️</div>
+            <h3 class="card-title">Quantum Layer</h3>
+            <p class="help-desc">How the Variational Quantum Classifier works</p>
+        </div>
+    </div>
+    <div class="clay-card help-topic" data-topic="CARLA weather conditions">
+        <div class="card-body" style="text-align:center;padding:2rem 1.5rem;">
+            <div class="help-icon" style="font-size:2.4rem;margin-bottom:.75rem;">🌦️</div>
+            <h3 class="card-title">Weather Modes</h3>
+            <p class="help-desc">Understanding the 7 weather presets</p>
+        </div>
+    </div>
+</div>
+
+<!-- FAQ accordion -->
+<div class="clay-card">
+    <div class="card-header">
+        <h3 class="card-title">❓ Frequently Asked Questions</h3>
+    </div>
+    <div class="card-body" style="padding:0;">
+        <div class="faq-list">
+            <details class="faq-item" data-topic="simulation start run">
+                <summary class="faq-question">How do I start a simulation?</summary>
+                <div class="faq-answer">
+                    Navigate to the <strong>Simulation</strong> page from the sidebar. Click <em>"Start Simulation"</em>. The system will initialise a virtual CARLA session, begin generating vehicle state data, and start the decision loop. You can monitor real-time telemetry on the Dashboard.
+                </div>
+            </details>
+            <details class="faq-item" data-topic="quantum classical difference compare">
+                <summary class="faq-question">What is the difference between Classical and Quantum decisions?</summary>
+                <div class="faq-answer">
+                    <strong>Classical decisions</strong> use a rule-based engine that evaluates lane occupancy, obstacle distance, and traffic-sign priority using if-else logic and weighted scoring.<br><br>
+                    <strong>Quantum decisions</strong> run the same feature set through a 4-qubit Variational Quantum Classifier (VQC) with angle-encoded inputs and entanglement layers. The VQC outputs a probability distribution over five actions (maintain, turn-left, turn-right, slow-down, emergency-stop), adding noise-resilient pattern recognition.
+                </div>
+            </details>
+            <details class="faq-item" data-topic="weather change preset condition">
+                <summary class="faq-question">How do weather changes affect driving decisions?</summary>
+                <div class="faq-answer">
+                    Weather presets modify visual noise, surface friction, and sensor reliability inside the perception pipeline. For example:<br>
+                    <ul style="margin:.75rem 0 0 1.25rem;">
+                        <li><strong>Heavy Rain</strong> — reduced lane visibility, increased stopping distance</li>
+                        <li><strong>Dense Fog</strong> — limited perception range, higher decoherence noise</li>
+                        <li><strong>Sandstorm</strong> — extreme noise on all channels</li>
+                    </ul>
+                    The quantum layer applies adaptive noise parameters per weather mode, while the classical engine applies static discount factors.
+                </div>
+            </details>
+            <details class="faq-item" data-topic="export data CSV download">
+                <summary class="faq-question">Can I export simulation data?</summary>
+                <div class="faq-answer">
+                    Yes. Go to <strong>Model Comparison</strong> or <strong>Settings → Data Management</strong> and click <em>"Export All Data (CSV)"</em>. This downloads every decision log entry for the current session as a comma-separated values file compatible with Excel, Pandas, or any data tool.
+                </div>
+            </details>
+            <details class="faq-item" data-topic="accuracy confidence score metric">
+                <summary class="faq-question">What do the accuracy and confidence scores mean?</summary>
+                <div class="faq-answer">
+                    <strong>Confidence</strong> is the maximum probability output from either the rule-based scorer (classical) or the VQC softmax (quantum). A confidence of 0.92 means the model assigned 92 % probability to its chosen action.<br><br>
+                    <strong>Accuracy</strong> on the Analytics page is a simulated metric comparing model decisions to a baseline "ground-truth" controller within CARLA. It aggregates over the session history and is useful for comparative studies.
+                </div>
+            </details>
+            <details class="faq-item" data-topic="requirements install setup python">
+                <summary class="faq-question">What are the system requirements?</summary>
+                <div class="faq-answer">
+                    <ul style="margin:.25rem 0 0 1.25rem;">
+                        <li>Python 3.10+</li>
+                        <li>Django 5.x &amp; Django REST Framework</li>
+                        <li>PennyLane (for quantum simulation)</li>
+                        <li>CARLA 0.9.14+ (optional — the platform runs a simulated backend when CARLA is unavailable)</li>
+                        <li>A modern browser (Chromium-based recommended)</li>
+                    </ul>
+                </div>
+            </details>
+        </div>
+    </div>
+</div>
+
+<!-- API reference -->
+<div class="clay-card">
+    <div class="card-header">
+        <h3 class="card-title">📡 API Reference</h3>
+    </div>
+    <div class="card-body">
+        <div class="api-table-wrap">
+            <table class="data-table">
+                <thead>
+                    <tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><span class="method-badge post">POST</span></td><td>/api/start-simulation/</td><td>Start a new simulation session</td></tr>
+                    <tr><td><span class="method-badge delete">POST</span></td><td>/api/stop-simulation/</td><td>Stop the current simulation</td></tr>
+                    <tr><td><span class="method-badge get">GET</span></td><td>/api/vehicle-state/</td><td>Get current vehicle telemetry</td></tr>
+                    <tr><td><span class="method-badge post">POST</span></td><td>/api/change-weather/</td><td>Change weather preset</td></tr>
+                    <tr><td><span class="method-badge get">GET</span></td><td>/api/decision-log/</td><td>Retrieve decision log entries</td></tr>
+                    <tr><td><span class="method-badge get">GET</span></td><td>/api/comparison-data/</td><td>Classical vs Quantum comparison</td></tr>
+                    <tr><td><span class="method-badge get">GET</span></td><td>/api/export/csv/</td><td>Download data as CSV</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+function filterHelp(q){
+    const term=q.toLowerCase();
+    document.querySelectorAll('.help-topic,.faq-item').forEach(el=>{
+        const topic=(el.dataset.topic||'')+' '+el.textContent.toLowerCase();
+        el.style.display=topic.includes(term)?'':'none';
+    });
+}
+</script>
+{% endblock %}

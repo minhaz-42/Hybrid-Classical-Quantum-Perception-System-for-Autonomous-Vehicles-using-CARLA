@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}QuantumDrive — Hybrid Quantum Autonomous Driving{% endblock %}
+{% block body_class %}landing-body{% endblock %}
+
+{% block body %}
+<!-- ═══ Landing Page — No Sidebar ═══ -->
+<div class="landing-page">
+
+    <!-- ─── Navigation Bar ─── -->
+    <nav class="landing-nav">
+        <div class="landing-nav-inner">
+            <div class="logo">
+                <div class="logo-icon-wrap"><span class="logo-icon">⚛</span></div>
+                <span class="logo-text">QuantumDrive</span>
+            </div>
+            <div class="landing-nav-links">
+                <a href="#features" class="landing-link">Features</a>
+                <a href="#how-it-works" class="landing-link">How It Works</a>
+                <a href="#tech" class="landing-link">Technology</a>
+                {% if request.user.is_authenticated %}
+                    <a href="{% url 'core:dashboard' %}" class="btn btn-primary btn-nav">Go to Dashboard</a>
+                {% else %}
+                    <a href="{% url 'core:login' %}" class="btn btn-ghost btn-nav">Sign In</a>
+                    <a href="{% url 'core:register' %}" class="btn btn-primary btn-nav">Get Started</a>
+                {% endif %}
+            </div>
+            <button class="mobile-menu-btn" id="landingMenuBtn">☰</button>
+        </div>
+    </nav>
+
+    <!-- ─── Hero Section ─── -->
+    <section class="hero-section">
+        <div class="hero-bg-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+            <div class="shape shape-4"></div>
+        </div>
+        <div class="hero-content">
+            <div class="hero-badge clay-badge-hero">🚀 Next Generation Autonomous Driving</div>
+            <h1 class="hero-title">
+                Hybrid <span class="gradient-text">Classical–Quantum</span><br>
+                Perception System
+            </h1>
+            <p class="hero-subtitle">
+                Experience autonomous driving powered by Variational Quantum Classifiers.
+                Real-time lane detection, traffic sign recognition, and intelligent
+                route planning using CARLA simulation.
+            </p>
+            <div class="hero-actions">
+                {% if request.user.is_authenticated %}
+                    <a href="{% url 'core:dashboard' %}" class="btn btn-primary btn-lg clay-btn">
+                        <span>Open Dashboard</span>
+                        <span class="btn-arrow">→</span>
+                    </a>
+                {% else %}
+                    <a href="{% url 'core:register' %}" class="btn btn-primary btn-lg clay-btn">
+                        <span>Get Started Free</span>
+                        <span class="btn-arrow">→</span>
+                    </a>
+                    <a href="{% url 'core:login' %}" class="btn btn-outline btn-lg">Sign In</a>
+                {% endif %}
+            </div>
+            <div class="hero-stats">
+                <div class="hero-stat clay-card-mini">
+                    <span class="hero-stat-value">95.8%</span>
+                    <span class="hero-stat-label">Quantum Accuracy</span>
+                </div>
+                <div class="hero-stat clay-card-mini">
+                    <span class="hero-stat-value">&lt;2ms</span>
+                    <span class="hero-stat-label">Decision Latency</span>
+                </div>
+                <div class="hero-stat clay-card-mini">
+                    <span class="hero-stat-value">12+</span>
+                    <span class="hero-stat-label">Traffic Signs</span>
+                </div>
+                <div class="hero-stat clay-card-mini">
+                    <span class="hero-stat-value">7</span>
+                    <span class="hero-stat-label">Weather Modes</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ─── Features Section ─── -->
+    <section class="landing-section" id="features">
+        <div class="section-inner">
+            <div class="section-header">
+                <span class="section-badge">Features</span>
+                <h2 class="section-title">Everything You Need for<br><span class="gradient-text">Quantum-Enhanced Driving</span></h2>
+                <p class="section-desc">A complete platform for simulating, comparing, and analyzing hybrid classical–quantum autonomous driving decisions.</p>
+            </div>
+            <div class="features-grid">
+                <div class="clay-card feature-card">
+                    <div class="feature-icon-wrap">📊</div>
+                    <h3 class="feature-title">Live Dashboard</h3>
+                    <p class="feature-desc">Real-time telemetry with steering, throttle, brake, lane offset, and quantum confidence scores displayed as interactive charts.</p>
+                </div>
+                <div class="clay-card feature-card">
+                    <div class="feature-icon-wrap">⚛️</div>
+                    <h3 class="feature-title">Quantum VQC Engine</h3>
+                    <p class="feature-desc">Simulated Variational Quantum Classifier with configurable noise, entanglement layers, and amplitude encoding.</p>
+                </div>
+                <div class="clay-card feature-card">
+                    <div class="feature-icon-wrap">🎮</div>
+                    <h3 class="feature-title">CARLA Integration</h3>
+                    <p class="feature-desc">Realistic autonomous driving simulation with lane geometry, vehicle kinematics, and dynamic weather conditions.</p>
+                </div>
+                <div class="clay-card feature-card">
+                    <div class="feature-icon-wrap">⚖️</div>
+                    <h3 class="feature-title">Model Comparison</h3>
+                    <p class="feature-desc">Side-by-side classical MLP vs quantum VQC performance analysis with lane deviation and collision tracking.</p>
+                </div>
+                <div class="clay-card feature-card">
+                    <div class="feature-icon-wrap">📈</div>
+                    <h3 class="feature-title">Advanced Analytics</h3>
+                    <p class="feature-desc">Deep-dive performance metrics, session history, and trend analysis across all simulation runs.</p>
+                </div>
+                <div class="clay-card feature-card">
+                    <div class="feature-icon-wrap">📥</div>
+                    <h3 class="feature-title">Data Export</h3>
+                    <p class="feature-desc">Export simulation logs as CSV for external analysis. Full audit trail of every decision made by both models.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ─── How It Works ─── -->
+    <section class="landing-section section-alt" id="how-it-works">
+        <div class="section-inner">
+            <div class="section-header">
+                <span class="section-badge">Process</span>
+                <h2 class="section-title">How <span class="gradient-text">QuantumDrive</span> Works</h2>
+            </div>
+            <div class="steps-grid">
+                <div class="clay-card step-card">
+                    <div class="step-number">01</div>
+                    <h3 class="step-title">CARLA Simulation</h3>
+                    <p class="step-desc">Vehicle telemetry is generated — steering, lane geometry, speed, traffic signs, and weather conditions.</p>
+                </div>
+                <div class="step-arrow">→</div>
+                <div class="clay-card step-card">
+                    <div class="step-number">02</div>
+                    <h3 class="step-title">Perception Layer</h3>
+                    <p class="step-desc">Raw data is processed into a 7-dimensional feature vector via normalization and encoding.</p>
+                </div>
+                <div class="step-arrow">→</div>
+                <div class="clay-card step-card">
+                    <div class="step-number">03</div>
+                    <h3 class="step-title">Quantum Decision</h3>
+                    <p class="step-desc">Feature vector is fed through VQC (rotation gates + entanglement) to produce a driving decision with confidence.</p>
+                </div>
+                <div class="step-arrow">→</div>
+                <div class="clay-card step-card">
+                    <div class="step-number">04</div>
+                    <h3 class="step-title">Live Analysis</h3>
+                    <p class="step-desc">Results are logged, visualized, and compared against classical MLP in real-time dashboards.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ─── Technology Section ─── -->
+    <section class="landing-section" id="tech">
+        <div class="section-inner">
+            <div class="section-header">
+                <span class="section-badge">Stack</span>
+                <h2 class="section-title">Built With <span class="gradient-text">Modern Technology</span></h2>
+            </div>
+            <div class="tech-grid">
+                <div class="clay-card tech-card"><span class="tech-icon">🐍</span><span class="tech-name">Python</span></div>
+                <div class="clay-card tech-card"><span class="tech-icon">🟢</span><span class="tech-name">Django</span></div>
+                <div class="clay-card tech-card"><span class="tech-icon">🔗</span><span class="tech-name">REST API</span></div>
+                <div class="clay-card tech-card"><span class="tech-icon">📊</span><span class="tech-name">Chart.js</span></div>
+                <div class="clay-card tech-card"><span class="tech-icon">⚛️</span><span class="tech-name">Quantum VQC</span></div>
+                <div class="clay-card tech-card"><span class="tech-icon">🚗</span><span class="tech-name">CARLA</span></div>
+                <div class="clay-card tech-card"><span class="tech-icon">🧠</span><span class="tech-name">Classical MLP</span></div>
+                <div class="clay-card tech-card"><span class="tech-icon">💾</span><span class="tech-name">SQLite</span></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ─── CTA Section ─── -->
+    <section class="landing-section cta-section">
+        <div class="section-inner">
+            <div class="clay-card cta-card">
+                <h2 class="cta-title">Ready to Experience Quantum Driving?</h2>
+                <p class="cta-desc">Start simulating hybrid classical–quantum autonomous driving decisions today.</p>
+                {% if request.user.is_authenticated %}
+                    <a href="{% url 'core:dashboard' %}" class="btn btn-primary btn-lg clay-btn">Open Dashboard →</a>
+                {% else %}
+                    <a href="{% url 'core:register' %}" class="btn btn-primary btn-lg clay-btn">Create Free Account →</a>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <!-- ─── Footer ─── -->
+    <footer class="landing-footer">
+        <div class="section-inner">
+            <div class="landing-footer-inner">
+                <div class="logo">
+                    <div class="logo-icon-wrap"><span class="logo-icon">⚛</span></div>
+                    <span class="logo-text">QuantumDrive</span>
+                </div>
+                <span class="footer-copy">© 2026 QuantumDrive. Hybrid Classical–Quantum Autonomous Driving Platform.</span>
+            </div>
+        </div>
+    </footer>
+</div>
+{% endblock %}

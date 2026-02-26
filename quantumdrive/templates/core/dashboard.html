@@ -1,0 +1,128 @@
+{% extends "base.html" %}{% comment %}Dashboard — Live telemetry, charts, decisions.{% endcomment %}
+
+{% block title %}Dashboard — QuantumDrive{% endblock %}
+{% block nav_dashboard %}active{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block page_subtitle %}Live telemetry and real-time decisions{% endblock %}
+
+{% block content %}
+<!-- ─── Telemetry Cards Row ─── -->
+<div class="grid grid-4">
+    <div class="clay-card metric-card">
+        <div class="card-body">
+            <div class="metric-label">Steering Angle</div>
+            <div class="metric-value" id="metricSteering">0.00°</div>
+            <div class="metric-bar">
+                <div class="bar-fill bar-steering" id="barSteering" style="width:50%"></div>
+            </div>
+        </div>
+    </div>
+    <div class="clay-card metric-card">
+        <div class="card-body">
+            <div class="metric-label">Throttle</div>
+            <div class="metric-value" id="metricThrottle">0.00</div>
+            <div class="metric-bar">
+                <div class="bar-fill bar-throttle" id="barThrottle" style="width:0%"></div>
+            </div>
+        </div>
+    </div>
+    <div class="clay-card metric-card">
+        <div class="card-body">
+            <div class="metric-label">Brake</div>
+            <div class="metric-value" id="metricBrake">0.00</div>
+            <div class="metric-bar">
+                <div class="bar-fill bar-brake" id="barBrake" style="width:0%"></div>
+            </div>
+        </div>
+    </div>
+    <div class="clay-card metric-card">
+        <div class="card-body">
+            <div class="metric-label">Speed</div>
+            <div class="metric-value" id="metricSpeed">0 <small>km/h</small></div>
+            <div class="metric-bar">
+                <div class="bar-fill bar-speed" id="barSpeed" style="width:0%"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ─── Second Row: Lane + Sign + Decision + Confidence ─── -->
+<div class="grid grid-4">
+    <div class="clay-card metric-card">
+        <div class="card-body">
+            <div class="metric-label">Lane Offset</div>
+            <div class="metric-value" id="metricLaneOffset">0.00 m</div>
+        </div>
+    </div>
+    <div class="clay-card metric-card">
+        <div class="card-body">
+            <div class="metric-label">Traffic Sign</div>
+            <div class="metric-value metric-sign" id="metricSign">None</div>
+        </div>
+    </div>
+    <div class="clay-card metric-card decision-card">
+        <div class="card-body">
+            <div class="metric-label">Current Decision</div>
+            <div class="metric-value decision-value" id="metricDecision">—</div>
+        </div>
+    </div>
+    <div class="clay-card metric-card">
+        <div class="card-body">
+            <div class="metric-label">Quantum Confidence</div>
+            <div class="metric-value confidence-value" id="metricConfidence">0.00%</div>
+            <div class="confidence-ring" id="confidenceRing">
+                <svg viewBox="0 0 36 36" class="circular-chart">
+                    <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                    <path class="circle" id="confidenceCircle" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                </svg>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ─── Charts Row ─── -->
+<div class="grid grid-2">
+    <div class="clay-card chart-card">
+        <div class="card-header">
+            <h3 class="card-title">📈 Steering Angle Over Time</h3>
+        </div>
+        <div class="card-body">
+            <canvas id="chartSteering"></canvas>
+        </div>
+    </div>
+    <div class="clay-card chart-card">
+        <div class="card-header">
+            <h3 class="card-title">📉 Confidence Score Over Time</h3>
+        </div>
+        <div class="card-body">
+            <canvas id="chartConfidence"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- ─── Weather & Model Info Row ─── -->
+<div class="grid grid-2">
+    <div class="clay-card">
+        <div class="card-header">
+            <h3 class="card-title">🌤️ Weather Condition</h3>
+        </div>
+        <div class="card-body">
+            <div class="weather-display" id="weatherDisplay">
+                <span class="weather-large-icon" id="weatherLargeIcon">☀️</span>
+                <span class="weather-large-text" id="weatherLargeText">Clear</span>
+            </div>
+        </div>
+    </div>
+    <div class="clay-card">
+        <div class="card-header">
+            <h3 class="card-title">⚛️ Active Model</h3>
+        </div>
+        <div class="card-body">
+            <div class="model-display">
+                <span class="model-type-label" id="modelTypeLabel">Quantum VQC</span>
+                <span class="model-type-sub" id="modelTypeSub">Variational Quantum Classifier</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

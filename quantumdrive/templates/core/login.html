@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Sign In — QuantumDrive{% endblock %}
+{% block body_class %}auth-body{% endblock %}
+
+{% block body %}
+<div class="auth-page">
+    <div class="auth-bg-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+    <div class="auth-container">
+        <div class="auth-left">
+            <div class="auth-brand">
+                <div class="logo">
+                    <div class="logo-icon-wrap logo-icon-lg"><span class="logo-icon">⚛</span></div>
+                    <span class="logo-text logo-text-lg">QuantumDrive</span>
+                </div>
+                <h2 class="auth-tagline">Hybrid Classical–Quantum<br>Autonomous Driving Platform</h2>
+                <p class="auth-tagline-sub">Simulate, compare, and optimize autonomous driving decisions powered by quantum computing.</p>
+                <div class="auth-features-mini">
+                    <div class="auth-feat"><span>✓</span> Real-time CARLA Simulation</div>
+                    <div class="auth-feat"><span>✓</span> Quantum VQC Engine</div>
+                    <div class="auth-feat"><span>✓</span> Live Performance Analytics</div>
+                    <div class="auth-feat"><span>✓</span> Model Comparison Tools</div>
+                </div>
+            </div>
+        </div>
+        <div class="auth-right">
+            <div class="clay-card auth-card">
+                <div class="auth-card-header">
+                    <h1 class="auth-title">Welcome Back</h1>
+                    <p class="auth-subtitle">Sign in to your QuantumDrive account</p>
+                </div>
+                <form method="post" class="auth-form" novalidate>
+                    {% csrf_token %}
+                    {% if form.errors %}
+                    <div class="alert alert-error clay-alert">
+                        <span class="alert-icon">⚠️</span>
+                        <span>Invalid username or password. Please try again.</span>
+                    </div>
+                    {% endif %}
+                    <div class="form-group">
+                        <label class="form-label" for="id_username">Username</label>
+                        <div class="input-wrap clay-input">
+                            <span class="input-icon">👤</span>
+                            <input type="text" name="username" id="id_username" class="form-input" placeholder="Enter your username" autofocus required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="id_password">Password</label>
+                        <div class="input-wrap clay-input">
+                            <span class="input-icon">🔒</span>
+                            <input type="password" name="password" id="id_password" class="form-input" placeholder="Enter your password" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full clay-btn">
+                        <span>Sign In</span>
+                        <span class="btn-arrow">→</span>
+                    </button>
+                </form>
+                <div class="auth-footer">
+                    <p>Don't have an account? <a href="{% url 'core:register' %}" class="auth-link">Create one</a></p>
+                    <a href="{% url 'core:landing' %}" class="auth-back-link">← Back to home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,146 @@
+{% extends "base.html" %}{% comment %}Simulation Control — Start/Stop, weather, quantum toggle.{% endcomment %}
+
+{% block title %}Simulation — QuantumDrive{% endblock %}
+{% block nav_simulation %}active{% endblock %}
+{% block page_title %}Simulation Control{% endblock %}
+{% block page_subtitle %}Start, stop and configure simulations{% endblock %}
+
+{% block content %}
+<div class="grid grid-2">
+    <!-- ─── Control Panel ─── -->
+    <div class="clay-card control-card">
+        <div class="card-header">
+            <h3 class="card-title">🎮 Simulation Controls</h3>
+            <span class="clay-badge badge-muted" id="simControlBadge">Stopped</span>
+        </div>
+        <div class="card-body">
+            <div class="control-group">
+                <button class="btn btn-start clay-btn" id="btnStart" onclick="QD.startSimulation()">
+                    <span class="btn-icon">▶</span> Start Simulation
+                </button>
+                <button class="btn btn-stop clay-btn" id="btnStop" onclick="QD.stopSimulation()" disabled>
+                    <span class="btn-icon">■</span> Stop Simulation
+                </button>
+            </div>
+
+            <div class="control-divider"></div>
+
+            <div class="control-group">
+                <label class="control-label" for="weatherSelect">Weather Condition</label>
+                <select class="select-input clay-select" id="weatherSelect" onchange="QD.changeWeather(this.value)">
+                    <option value="Clear">☀️ Clear</option>
+                    <option value="Cloudy">☁️ Cloudy</option>
+                    <option value="Rain">🌧️ Rain</option>
+                    <option value="Heavy Rain">⛈️ Heavy Rain</option>
+                    <option value="Fog">🌫️ Fog</option>
+                    <option value="Night">🌙 Night</option>
+                    <option value="Sunset">🌅 Sunset</option>
+                </select>
+            </div>
+
+            <div class="control-divider"></div>
+
+            <div class="control-group">
+                <label class="control-label">Quantum Decision Layer</label>
+                <div class="toggle-wrapper">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="quantumToggle" checked onchange="QD.toggleQuantum(this.checked)">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <span class="toggle-label" id="quantumToggleLabel">Enabled</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── Session Info ─── -->
+    <div class="clay-card">
+        <div class="card-header">
+            <h3 class="card-title">📋 Session Information</h3>
+        </div>
+        <div class="card-body">
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">Status</span>
+                    <span class="info-value" id="sessionStatus">Stopped</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Session ID</span>
+                    <span class="info-value" id="sessionId">—</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Weather</span>
+                    <span class="info-value" id="sessionWeather">Clear</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Quantum Layer</span>
+                    <span class="info-value" id="sessionQuantum">ON</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Data Points</span>
+                    <span class="info-value" id="sessionDataPoints">0</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Uptime</span>
+                    <span class="info-value" id="sessionUptime">00:00:00</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ─── Live Driving Visualization ─── -->
+<div class="clay-card driving-viz-card">
+    <div class="card-header">
+        <h3 class="card-title">🚗 Live Driving View</h3>
+        <div class="driving-viz-legend">
+            <span class="viz-legend-item"><span class="viz-dot viz-dot-car"></span> Vehicle</span>
+            <span class="viz-legend-item"><span class="viz-dot viz-dot-lane"></span> Lane</span>
+            <span class="viz-legend-item"><span class="viz-dot viz-dot-sign"></span> Sign</span>
+        </div>
+    </div>
+    <div class="card-body driving-viz-body">
+        <canvas id="drivingCanvas" width="800" height="400"></canvas>
+        <div class="driving-viz-overlay">
+            <div class="viz-hud viz-hud-tl">
+                <div class="viz-hud-label">Speed</div>
+                <div class="viz-hud-value" id="vizSpeed">0 <small>km/h</small></div>
+            </div>
+            <div class="viz-hud viz-hud-tr">
+                <div class="viz-hud-label">Decision</div>
+                <div class="viz-hud-value" id="vizDecision">—</div>
+            </div>
+            <div class="viz-hud viz-hud-bl">
+                <div class="viz-hud-label">Steering</div>
+                <div class="viz-hud-value" id="vizSteering">0.00°</div>
+            </div>
+            <div class="viz-hud viz-hud-br">
+                <div class="viz-hud-label">Sign</div>
+                <div class="viz-hud-value" id="vizSign">None</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ─── Live Mini Dashboard ─── -->
+<div class="grid grid-3">
+    <div class="clay-card metric-card">
+        <div class="card-body">
+            <div class="metric-label">Current Decision</div>
+            <div class="metric-value decision-value" id="simDecision">—</div>
+        </div>
+    </div>
+    <div class="clay-card metric-card">
+        <div class="card-body">
+            <div class="metric-label">Confidence</div>
+            <div class="metric-value confidence-value" id="simConfidence">0.00%</div>
+        </div>
+    </div>
+    <div class="clay-card metric-card">
+        <div class="card-body">
+            <div class="metric-label">Detected Sign</div>
+            <div class="metric-value metric-sign" id="simSign">None</div>
+        </div>
+    </div>
+</div>
+{% endblock %}

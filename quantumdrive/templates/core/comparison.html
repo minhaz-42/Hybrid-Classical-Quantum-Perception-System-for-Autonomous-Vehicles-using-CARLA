@@ -1,0 +1,110 @@
+{% extends "base.html" %}{% comment %}Model Comparison — Classical vs Quantum.{% endcomment %}
+
+{% block title %}Model Comparison — QuantumDrive{% endblock %}
+{% block nav_comparison %}active{% endblock %}
+{% block page_title %}Model Comparison{% endblock %}
+{% block page_subtitle %}Classical MLP vs Quantum VQC performance{% endblock %}
+
+{% block content %}
+<!-- ─── Summary Comparison Cards ─── -->
+<div class="grid grid-2">
+    <!-- Classical Summary -->
+    <div class="clay-card comparison-card classical-card">
+        <div class="card-header">
+            <h3 class="card-title">🧠 Classical MLP</h3>
+            <span class="clay-badge badge-classical">Classical</span>
+        </div>
+        <div class="card-body">
+            <div class="comparison-stats">
+                <div class="comp-stat">
+                    <span class="comp-label">Avg Confidence</span>
+                    <span class="comp-value" id="classicalConfidence">0.00</span>
+                </div>
+                <div class="comp-stat">
+                    <span class="comp-label">Avg Lane Deviation</span>
+                    <span class="comp-value" id="classicalDeviation">0.00</span>
+                </div>
+                <div class="comp-stat">
+                    <span class="comp-label">Avg Steering Error</span>
+                    <span class="comp-value" id="classicalSteeringErr">0.00</span>
+                </div>
+                <div class="comp-stat">
+                    <span class="comp-label">Collisions</span>
+                    <span class="comp-value collision-value" id="classicalCollisions">0</span>
+                </div>
+                <div class="comp-stat">
+                    <span class="comp-label">Total Decisions</span>
+                    <span class="comp-value" id="classicalTotal">0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quantum Summary -->
+    <div class="clay-card comparison-card quantum-card">
+        <div class="card-header">
+            <h3 class="card-title">⚛️ Quantum VQC</h3>
+            <span class="clay-badge badge-quantum">Quantum</span>
+        </div>
+        <div class="card-body">
+            <div class="comparison-stats">
+                <div class="comp-stat">
+                    <span class="comp-label">Avg Confidence</span>
+                    <span class="comp-value" id="quantumConfidence">0.00</span>
+                </div>
+                <div class="comp-stat">
+                    <span class="comp-label">Avg Lane Deviation</span>
+                    <span class="comp-value" id="quantumDeviation">0.00</span>
+                </div>
+                <div class="comp-stat">
+                    <span class="comp-label">Avg Steering Error</span>
+                    <span class="comp-value" id="quantumSteeringErr">0.00</span>
+                </div>
+                <div class="comp-stat">
+                    <span class="comp-label">Collisions</span>
+                    <span class="comp-value collision-value" id="quantumCollisions">0</span>
+                </div>
+                <div class="comp-stat">
+                    <span class="comp-label">Total Decisions</span>
+                    <span class="comp-value" id="quantumTotal">0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ─── Comparison Charts ─── -->
+<div class="grid grid-2">
+    <div class="clay-card chart-card">
+        <div class="card-header">
+            <h3 class="card-title">📊 Lane Deviation Comparison</h3>
+        </div>
+        <div class="card-body">
+            <canvas id="chartLaneDeviation"></canvas>
+        </div>
+    </div>
+    <div class="clay-card chart-card">
+        <div class="card-header">
+            <h3 class="card-title">📊 Confidence Comparison</h3>
+        </div>
+        <div class="card-body">
+            <canvas id="chartConfidenceComparison"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- ─── Collision Bar Chart ─── -->
+<div class="grid grid-1">
+    <div class="clay-card chart-card">
+        <div class="card-header">
+            <h3 class="card-title">💥 Collision Counter</h3>
+            <button class="btn btn-outline clay-btn" onclick="QD.loadComparison()">
+                <span class="btn-icon">🔄</span> Refresh
+            </button>
+        </div>
+        <div class="card-body">
+            <canvas id="chartCollisions"></canvas>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,133 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}QuantumDrive{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="{% block body_class %}app-body{% endblock %}">
+    {% block body %}
+    <!-- ═══ Sidebar Navigation ═══ -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <div class="logo-icon-wrap">
+                    <span class="logo-icon">⚛</span>
+                </div>
+                <span class="logo-text">QuantumDrive</span>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section-label">Main</div>
+            <a href="{% url 'core:dashboard' %}" class="nav-item {% block nav_dashboard %}{% endblock %}">
+                <span class="nav-icon">📊</span>
+                <span class="nav-label">Dashboard</span>
+            </a>
+            <a href="{% url 'core:simulation' %}" class="nav-item {% block nav_simulation %}{% endblock %}">
+                <span class="nav-icon">🎮</span>
+                <span class="nav-label">Simulation</span>
+            </a>
+            <a href="{% url 'core:analytics' %}" class="nav-item {% block nav_analytics %}{% endblock %}">
+                <span class="nav-icon">📈</span>
+                <span class="nav-label">Analytics</span>
+            </a>
+
+            <div class="nav-section-label">Data</div>
+            <a href="{% url 'core:logs' %}" class="nav-item {% block nav_logs %}{% endblock %}">
+                <span class="nav-icon">📋</span>
+                <span class="nav-label">Logs</span>
+            </a>
+            <a href="{% url 'core:comparison' %}" class="nav-item {% block nav_comparison %}{% endblock %}">
+                <span class="nav-icon">⚖️</span>
+                <span class="nav-label">Model Comparison</span>
+            </a>
+
+            <div class="nav-section-label">Account</div>
+            <a href="{% url 'core:profile' %}" class="nav-item {% block nav_profile %}{% endblock %}">
+                <span class="nav-icon">👤</span>
+                <span class="nav-label">Profile</span>
+            </a>
+            <a href="{% url 'core:settings' %}" class="nav-item {% block nav_settings %}{% endblock %}">
+                <span class="nav-icon">⚙️</span>
+                <span class="nav-label">Settings</span>
+            </a>
+            <a href="{% url 'core:help' %}" class="nav-item {% block nav_help %}{% endblock %}">
+                <span class="nav-icon">❓</span>
+                <span class="nav-label">Help Center</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="sidebar-user">
+                <div class="user-avatar">{{ request.user.username|first|upper }}</div>
+                <div class="user-info">
+                    <span class="user-name">{{ request.user.username }}</span>
+                    <span class="user-role">Operator</span>
+                </div>
+            </div>
+            <a href="{% url 'core:logout' %}" class="nav-item nav-logout">
+                <span class="nav-icon">🚪</span>
+                <span class="nav-label">Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- ═══ Main Content Area ═══ -->
+    <div class="main-wrapper">
+        <!-- ─── Top Navbar ─── -->
+        <header class="topbar">
+            <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+            <div class="topbar-left">
+                <h1 class="page-title">{% block page_title %}Dashboard{% endblock %}</h1>
+                <p class="page-subtitle">{% block page_subtitle %}{% endblock %}</p>
+            </div>
+            <div class="topbar-right">
+                <div class="clay-badge badge-status" id="simStatusBadge">
+                    <span class="status-dot offline"></span>
+                    <span id="simStatusText">Offline</span>
+                </div>
+                <div class="clay-badge badge-weather" id="weatherBadge">
+                    <span class="weather-icon">☀️</span>
+                    <span id="weatherText">Clear</span>
+                </div>
+                <div class="clay-badge badge-quantum" id="quantumBadge">
+                    <span class="quantum-icon">⚛</span>
+                    <span id="quantumText">Quantum ON</span>
+                </div>
+                <div class="topbar-user">
+                    <a href="{% url 'core:profile' %}" class="user-avatar-sm">{{ request.user.username|first|upper }}</a>
+                </div>
+            </div>
+        </header>
+
+        <!-- ─── Page Content ─── -->
+        <main class="content">
+            {% block content %}{% endblock %}
+        </main>
+
+        <!-- ─── Footer ─── -->
+        <footer class="app-footer">
+            <span>© 2026 QuantumDrive — Hybrid Classical–Quantum Autonomous Driving Platform</span>
+            <span class="footer-version">v2.0.0</span>
+        </footer>
+    </div>
+    {% endblock %}
+
+    <!-- ═══ CSRF Token for JS fetch calls ═══ -->
+    <script>
+        window.CSRF_TOKEN = "{{ csrf_token }}";
+    </script>
+    <script src="{% static 'js/app.js' %}"></script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

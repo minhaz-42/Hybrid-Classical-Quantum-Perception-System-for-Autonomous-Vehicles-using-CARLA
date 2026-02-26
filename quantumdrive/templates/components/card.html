@@ -1,0 +1,19 @@
+{% comment %}
+Reusable Card Component
+========================
+Usage:
+    {% include "components/card.html" with title="My Card" id="myCard" %}
+{% endcomment %}
+<div class="card {% if extra_class %}{{ extra_class }}{% endif %}" {% if id %}id="{{ id }}"{% endif %}>
+    {% if title %}
+    <div class="card-header">
+        <h3 class="card-title">{{ title }}</h3>
+        {% if badge %}
+        <span class="card-badge">{{ badge }}</span>
+        {% endif %}
+    </div>
+    {% endif %}
+    <div class="card-body">
+        {{ content|safe }}
+    </div>
+</div>
