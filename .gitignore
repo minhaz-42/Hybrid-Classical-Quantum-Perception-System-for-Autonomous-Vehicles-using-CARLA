@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+.venv/
+
+# Django
+*.log
+*.pot
+*.pyc
+*.pyo
+*.~
+*.sqlite3
+/media
+/staticfiles
+
+# Editor/IDE
+.vscode/
+.idea/
+*.swp
+
+# macOS
+.DS_Store
+
+# Node
+node_modules/
+npm-debug.log
