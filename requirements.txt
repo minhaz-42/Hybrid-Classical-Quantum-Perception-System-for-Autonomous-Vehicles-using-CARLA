@@ -1,18 +1,25 @@
 # QuantumDrive — Python Dependencies
 # Install with: pip install -r requirements.txt
 
-# Web framework
+# ── Web Framework ──
 Django>=5.2,<6.0
-
-# REST API
 djangorestframework>=3.15,<4.0
 
-# CARLA Python API (requires separate CARLA server installation)
-# carla>=0.9.15
+# ── ML / Deep Learning ──
+torch>=2.2
+torchvision>=0.17
+tensorboard>=2.16
 
-# Quantum computing (optional — for real quantum circuit execution)
-# qiskit>=1.0
-# pennylane>=0.35
+# ── Image Processing ──
+Pillow>=10.0
 
-# Numeric / scientific
+# ── Numeric / Scientific ──
 numpy>=1.26
+scikit-learn>=1.4
+
+# ── Quantum Computing (optional — for real VQC execution) ──
+# pennylane>=0.35
+# qiskit>=1.0
+
+# ── CARLA Python API (requires separate CARLA server installation) ──
+# carla>=0.9.15

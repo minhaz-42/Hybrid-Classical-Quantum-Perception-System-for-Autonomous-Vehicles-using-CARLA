@@ -38,47 +38,70 @@
             <div class="shape shape-3"></div>
             <div class="shape shape-4"></div>
         </div>
-        <div class="hero-content">
-            <div class="hero-badge clay-badge-hero">🚀 Next Generation Autonomous Driving</div>
-            <h1 class="hero-title">
-                Hybrid <span class="gradient-text">Classical–Quantum</span><br>
-                Perception System
-            </h1>
-            <p class="hero-subtitle">
-                Experience autonomous driving powered by Variational Quantum Classifiers.
-                Real-time lane detection, traffic sign recognition, and intelligent
-                route planning using CARLA simulation.
-            </p>
-            <div class="hero-actions">
-                {% if request.user.is_authenticated %}
-                    <a href="{% url 'core:dashboard' %}" class="btn btn-primary btn-lg clay-btn">
-                        <span>Open Dashboard</span>
-                        <span class="btn-arrow">→</span>
-                    </a>
-                {% else %}
-                    <a href="{% url 'core:register' %}" class="btn btn-primary btn-lg clay-btn">
-                        <span>Get Started Free</span>
-                        <span class="btn-arrow">→</span>
-                    </a>
-                    <a href="{% url 'core:login' %}" class="btn btn-outline btn-lg">Sign In</a>
-                {% endif %}
+        <div class="hero-content hero-grid">
+            <div class="hero-copy">
+                <div class="hero-badge clay-badge-hero">🚀 Next Generation Autonomous Driving</div>
+                <h1 class="hero-title">
+                    Hybrid <span class="gradient-text">Classical–Quantum</span><br>
+                    Perception for Autonomous Vehicles
+                </h1>
+                <p class="hero-subtitle">
+                    Run a live CARLA loop, compare classical and quantum policies in real time,
+                    and inspect confidence, lane deviation, and decision quality continuously.
+                </p>
+                <div class="hero-actions">
+                    {% if request.user.is_authenticated %}
+                        <a href="{% url 'core:dashboard' %}" class="btn btn-primary btn-lg clay-btn">
+                            <span>Open Dashboard</span>
+                            <span class="btn-arrow">→</span>
+                        </a>
+                        <a href="{% url 'core:research_dashboard' %}" class="btn btn-outline btn-lg">Open Research Lab</a>
+                    {% else %}
+                        <a href="{% url 'core:register' %}" class="btn btn-primary btn-lg clay-btn">
+                            <span>Get Started Free</span>
+                            <span class="btn-arrow">→</span>
+                        </a>
+                        <a href="{% url 'core:login' %}" class="btn btn-outline btn-lg">Sign In</a>
+                    {% endif %}
+                </div>
             </div>
-            <div class="hero-stats">
-                <div class="hero-stat clay-card-mini">
-                    <span class="hero-stat-value">95.8%</span>
-                    <span class="hero-stat-label">Quantum Accuracy</span>
+
+            <div class="hero-visual clay-card">
+                <div class="hero-visual-head">
+                    <span class="hero-live-dot"></span>
+                    <span>Live Simulation Snapshot</span>
                 </div>
-                <div class="hero-stat clay-card-mini">
-                    <span class="hero-stat-value">&lt;2ms</span>
-                    <span class="hero-stat-label">Decision Latency</span>
+                <div class="hero-visual-grid">
+                    <div class="hero-stat clay-card-mini">
+                        <span class="hero-stat-value">95.8%</span>
+                        <span class="hero-stat-label">Quantum Accuracy</span>
+                    </div>
+                    <div class="hero-stat clay-card-mini">
+                        <span class="hero-stat-value">&lt;2ms</span>
+                        <span class="hero-stat-label">Decision Latency</span>
+                    </div>
+                    <div class="hero-stat clay-card-mini">
+                        <span class="hero-stat-value">12+</span>
+                        <span class="hero-stat-label">Traffic Signs</span>
+                    </div>
+                    <div class="hero-stat clay-card-mini">
+                        <span class="hero-stat-value">7</span>
+                        <span class="hero-stat-label">Weather Modes</span>
+                    </div>
                 </div>
-                <div class="hero-stat clay-card-mini">
-                    <span class="hero-stat-value">12+</span>
-                    <span class="hero-stat-label">Traffic Signs</span>
-                </div>
-                <div class="hero-stat clay-card-mini">
-                    <span class="hero-stat-value">7</span>
-                    <span class="hero-stat-label">Weather Modes</span>
+                <div class="hero-kpis">
+                    <div class="hero-kpi-row">
+                        <span>Lane Deviation</span>
+                        <strong>0.08 m</strong>
+                    </div>
+                    <div class="hero-kpi-row">
+                        <span>Classical Confidence</span>
+                        <strong>82.4%</strong>
+                    </div>
+                    <div class="hero-kpi-row">
+                        <span>Quantum Confidence</span>
+                        <strong>88.7%</strong>
+                    </div>
                 </div>
             </div>
         </div>
@@ -92,37 +115,55 @@
                 <h2 class="section-title">Everything You Need for<br><span class="gradient-text">Quantum-Enhanced Driving</span></h2>
                 <p class="section-desc">A complete platform for simulating, comparing, and analyzing hybrid classical–quantum autonomous driving decisions.</p>
             </div>
-            <div class="features-grid">
-                <div class="clay-card feature-card">
-                    <div class="feature-icon-wrap">📊</div>
+            <div class="features-grid v2">
+                <article class="clay-card feature-card v2">
+                    <div class="feature-top">
+                        <div class="feature-icon-wrap">📊</div>
+                        <span class="feature-tag">Realtime</span>
+                    </div>
                     <h3 class="feature-title">Live Dashboard</h3>
                     <p class="feature-desc">Real-time telemetry with steering, throttle, brake, lane offset, and quantum confidence scores displayed as interactive charts.</p>
-                </div>
-                <div class="clay-card feature-card">
-                    <div class="feature-icon-wrap">⚛️</div>
+                </article>
+                <article class="clay-card feature-card v2">
+                    <div class="feature-top">
+                        <div class="feature-icon-wrap">⚛️</div>
+                        <span class="feature-tag">Quantum Core</span>
+                    </div>
                     <h3 class="feature-title">Quantum VQC Engine</h3>
                     <p class="feature-desc">Simulated Variational Quantum Classifier with configurable noise, entanglement layers, and amplitude encoding.</p>
-                </div>
-                <div class="clay-card feature-card">
-                    <div class="feature-icon-wrap">🎮</div>
+                </article>
+                <article class="clay-card feature-card v2">
+                    <div class="feature-top">
+                        <div class="feature-icon-wrap">🎮</div>
+                        <span class="feature-tag">Simulator</span>
+                    </div>
                     <h3 class="feature-title">CARLA Integration</h3>
                     <p class="feature-desc">Realistic autonomous driving simulation with lane geometry, vehicle kinematics, and dynamic weather conditions.</p>
-                </div>
-                <div class="clay-card feature-card">
-                    <div class="feature-icon-wrap">⚖️</div>
+                </article>
+                <article class="clay-card feature-card v2">
+                    <div class="feature-top">
+                        <div class="feature-icon-wrap">⚖️</div>
+                        <span class="feature-tag">Benchmark</span>
+                    </div>
                     <h3 class="feature-title">Model Comparison</h3>
                     <p class="feature-desc">Side-by-side classical MLP vs quantum VQC performance analysis with lane deviation and collision tracking.</p>
-                </div>
-                <div class="clay-card feature-card">
-                    <div class="feature-icon-wrap">📈</div>
+                </article>
+                <article class="clay-card feature-card v2">
+                    <div class="feature-top">
+                        <div class="feature-icon-wrap">📈</div>
+                        <span class="feature-tag">Insights</span>
+                    </div>
                     <h3 class="feature-title">Advanced Analytics</h3>
                     <p class="feature-desc">Deep-dive performance metrics, session history, and trend analysis across all simulation runs.</p>
-                </div>
-                <div class="clay-card feature-card">
-                    <div class="feature-icon-wrap">📥</div>
+                </article>
+                <article class="clay-card feature-card v2">
+                    <div class="feature-top">
+                        <div class="feature-icon-wrap">📥</div>
+                        <span class="feature-tag">Portable</span>
+                    </div>
                     <h3 class="feature-title">Data Export</h3>
                     <p class="feature-desc">Export simulation logs as CSV for external analysis. Full audit trail of every decision made by both models.</p>
-                </div>
+                </article>
             </div>
         </div>
     </section>
@@ -134,30 +175,28 @@
                 <span class="section-badge">Process</span>
                 <h2 class="section-title">How <span class="gradient-text">QuantumDrive</span> Works</h2>
             </div>
-            <div class="steps-grid">
-                <div class="clay-card step-card">
+            <div class="process-line"></div>
+            <div class="steps-grid v2">
+                <article class="clay-card step-card v2">
                     <div class="step-number">01</div>
                     <h3 class="step-title">CARLA Simulation</h3>
                     <p class="step-desc">Vehicle telemetry is generated — steering, lane geometry, speed, traffic signs, and weather conditions.</p>
-                </div>
-                <div class="step-arrow">→</div>
-                <div class="clay-card step-card">
+                </article>
+                <article class="clay-card step-card v2">
                     <div class="step-number">02</div>
                     <h3 class="step-title">Perception Layer</h3>
                     <p class="step-desc">Raw data is processed into a 7-dimensional feature vector via normalization and encoding.</p>
-                </div>
-                <div class="step-arrow">→</div>
-                <div class="clay-card step-card">
+                </article>
+                <article class="clay-card step-card v2">
                     <div class="step-number">03</div>
                     <h3 class="step-title">Quantum Decision</h3>
                     <p class="step-desc">Feature vector is fed through VQC (rotation gates + entanglement) to produce a driving decision with confidence.</p>
-                </div>
-                <div class="step-arrow">→</div>
-                <div class="clay-card step-card">
+                </article>
+                <article class="clay-card step-card v2">
                     <div class="step-number">04</div>
                     <h3 class="step-title">Live Analysis</h3>
                     <p class="step-desc">Results are logged, visualized, and compared against classical MLP in real-time dashboards.</p>
-                </div>
+                </article>
             </div>
         </div>
     </section>
@@ -169,15 +208,15 @@
                 <span class="section-badge">Stack</span>
                 <h2 class="section-title">Built With <span class="gradient-text">Modern Technology</span></h2>
             </div>
-            <div class="tech-grid">
-                <div class="clay-card tech-card"><span class="tech-icon">🐍</span><span class="tech-name">Python</span></div>
-                <div class="clay-card tech-card"><span class="tech-icon">🟢</span><span class="tech-name">Django</span></div>
-                <div class="clay-card tech-card"><span class="tech-icon">🔗</span><span class="tech-name">REST API</span></div>
-                <div class="clay-card tech-card"><span class="tech-icon">📊</span><span class="tech-name">Chart.js</span></div>
-                <div class="clay-card tech-card"><span class="tech-icon">⚛️</span><span class="tech-name">Quantum VQC</span></div>
-                <div class="clay-card tech-card"><span class="tech-icon">🚗</span><span class="tech-name">CARLA</span></div>
-                <div class="clay-card tech-card"><span class="tech-icon">🧠</span><span class="tech-name">Classical MLP</span></div>
-                <div class="clay-card tech-card"><span class="tech-icon">💾</span><span class="tech-name">SQLite</span></div>
+            <div class="tech-grid v2">
+                <article class="clay-card tech-card v2"><span class="tech-icon">🐍</span><span class="tech-name">Python</span></article>
+                <article class="clay-card tech-card v2"><span class="tech-icon">🟢</span><span class="tech-name">Django</span></article>
+                <article class="clay-card tech-card v2"><span class="tech-icon">🔗</span><span class="tech-name">REST API</span></article>
+                <article class="clay-card tech-card v2"><span class="tech-icon">📊</span><span class="tech-name">Chart.js</span></article>
+                <article class="clay-card tech-card v2"><span class="tech-icon">⚛️</span><span class="tech-name">Quantum VQC</span></article>
+                <article class="clay-card tech-card v2"><span class="tech-icon">🚗</span><span class="tech-name">CARLA</span></article>
+                <article class="clay-card tech-card v2"><span class="tech-icon">🧠</span><span class="tech-name">Classical MLP</span></article>
+                <article class="clay-card tech-card v2"><span class="tech-icon">💾</span><span class="tech-name">SQLite</span></article>
             </div>
         </div>
     </section>
@@ -185,14 +224,18 @@
     <!-- ─── CTA Section ─── -->
     <section class="landing-section cta-section">
         <div class="section-inner">
-            <div class="clay-card cta-card">
-                <h2 class="cta-title">Ready to Experience Quantum Driving?</h2>
-                <p class="cta-desc">Start simulating hybrid classical–quantum autonomous driving decisions today.</p>
-                {% if request.user.is_authenticated %}
-                    <a href="{% url 'core:dashboard' %}" class="btn btn-primary btn-lg clay-btn">Open Dashboard →</a>
-                {% else %}
-                    <a href="{% url 'core:register' %}" class="btn btn-primary btn-lg clay-btn">Create Free Account →</a>
-                {% endif %}
+            <div class="clay-card cta-card v2">
+                <div class="cta-copy">
+                    <h2 class="cta-title">Ready to Experience Quantum Driving?</h2>
+                    <p class="cta-desc">Start simulating hybrid classical–quantum autonomous driving decisions today.</p>
+                </div>
+                <div class="cta-actions">
+                    {% if request.user.is_authenticated %}
+                        <a href="{% url 'core:dashboard' %}" class="btn btn-primary btn-lg clay-btn">Open Dashboard →</a>
+                    {% else %}
+                        <a href="{% url 'core:register' %}" class="btn btn-primary btn-lg clay-btn">Create Free Account →</a>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </section>

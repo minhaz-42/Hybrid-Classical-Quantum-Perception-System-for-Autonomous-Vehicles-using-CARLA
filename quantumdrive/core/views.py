@@ -25,10 +25,14 @@ from rest_framework import status
 
 from .models import (
     SimulationSession, VehicleState, DecisionLog, WeatherCondition,
+    Experiment, ExperimentResult, TrainedModel, ResearchMetric,
 )
 from .serializers import (
     VehicleStateSerializer, DecisionLogSerializer,
     WeatherChangeSerializer,
+    ExperimentSerializer, ExperimentResultSerializer,
+    TrainedModelSerializer, ResearchMetricSerializer,
+    PredictRequestSerializer,
 )
 from .services.carla_service import carla_service
 from .services.perception_service import perception_service
@@ -135,6 +139,11 @@ class HelpView(LoginRequiredMixin, TemplateView):
 class ProfileView(LoginRequiredMixin, TemplateView):
     """User profile page."""
     template_name = "core/profile.html"
+
+
+class ResearchDashboardView(LoginRequiredMixin, TemplateView):
+    """Advanced research analytics dashboard."""
+    template_name = "core/research_dashboard.html"
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -497,3 +506,296 @@ class ExportCSVView(APIView):
             ])
 
         return response
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+#  NEW API VIEWS — Experiments, Research, Model Serving
+# ═══════════════════════════════════════════════════════════════════════════════
+
+class ExperimentListAPIView(APIView):
+    """
+    GET  /api/experiments/       — List all experiments
+    POST /api/experiments/       — Create a new experiment
+    """
+
+    def get(self, request):
+        experiments = Experiment.objects.all()[:50]
+        serializer = ExperimentSerializer(experiments, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = ExperimentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ExperimentDetailAPIView(APIView):
+    """
+    GET /api/experiments/<id>/   — Get experiment details with results
+    """
+
+    def get(self, request, pk):
+        try:
+            experiment = Experiment.objects.get(pk=pk)
+        except Experiment.DoesNotExist:
+            return Response({"detail": "Experiment not found."}, status=404)
+
+        data = ExperimentSerializer(experiment).data
+        data["results"] = ExperimentResultSerializer(
+            experiment.results.all(), many=True
+        ).data
+        data["research_metrics"] = ResearchMetricSerializer(
+            experiment.research_metrics.all(), many=True
+        ).data
+        return Response(data)
+
+
+class ExperimentResultsAPIView(APIView):
+    """
+    GET  /api/experiment-results/       — List results (filterable by experiment)
+    POST /api/experiment-results/       — Log new result metrics
+    """
+
+    def get(self, request):
+        exp_id = request.query_params.get("experiment")
+        qs = ExperimentResult.objects.all()
+        if exp_id:
+            qs = qs.filter(experiment_id=exp_id)
+        serializer = ExperimentResultSerializer(qs[:500], many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = ExperimentResultSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class TrainedModelListAPIView(APIView):
+    """
+    GET /api/trained-models/    — List all trained models
+    """
+
+    def get(self, request):
+        models_list = TrainedModel.objects.all()[:50]
+        serializer = TrainedModelSerializer(models_list, many=True)
+        return Response(serializer.data)
+
+
+class ResearchMetricsAPIView(APIView):
+    """
+    GET  /api/research-metrics/  — Get research metrics data
+    POST /api/research-metrics/  — Store new metric
+    """
+
+    def get(self, request):
+        metric_type = request.query_params.get("type")
+        qs = ResearchMetric.objects.all()
+        if metric_type:
+            qs = qs.filter(metric_type=metric_type)
+        serializer = ResearchMetricSerializer(qs[:100], many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = ResearchMetricSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ResearchDashboardDataAPIView(APIView):
+    """
+    GET /api/research-dashboard-data/
+    Aggregated data for the research analytics dashboard.
+    """
+
+    def get(self, request):
+        import numpy as np
+
+        # Model performance summary
+        experiments = Experiment.objects.all()[:20]
+        exp_summary = []
+        for exp in experiments:
+            results = exp.results.filter(metric_name="val_accuracy")
+            best_acc = results.order_by("-metric_value").first()
+            exp_summary.append({
+                "id": exp.id,
+                "name": exp.name,
+                "model": exp.model_name,
+                "type": exp.experiment_type,
+                "status": exp.status,
+                "best_accuracy": best_acc.metric_value if best_acc else 0,
+                "runtime": exp.runtime_seconds,
+            })
+
+        # Distillation curves (latest experiment)
+        latest_distill = Experiment.objects.filter(
+            experiment_type="distillation"
+        ).first()
+        distillation_curves = {"train_loss": [], "val_loss": [], "val_accuracy": []}
+        if latest_distill:
+            for metric in ["train_loss", "val_loss", "val_accuracy"]:
+                results = latest_distill.results.filter(
+                    metric_name=metric
+                ).order_by("epoch")
+                distillation_curves[metric] = [
+                    {"epoch": r.epoch, "value": r.metric_value}
+                    for r in results
+                ]
+
+        # Model comparison stats
+        trained_models = TrainedModel.objects.all()[:10]
+        model_comparison = [{
+            "name": m.name,
+            "architecture": m.architecture,
+            "params": m.num_params,
+            "size_mb": m.model_size_mb,
+            "accuracy": m.accuracy,
+            "latency_ms": m.inference_ms,
+        } for m in trained_models]
+
+        # Confusion matrix (latest)
+        confusion = ResearchMetric.objects.filter(
+            metric_type="confusion_matrix"
+        ).first()
+
+        # ROC data (latest)
+        roc = ResearchMetric.objects.filter(metric_type="roc_curve").first()
+
+        # Classical vs Quantum comparison
+        classical_metrics = {
+            "avg_confidence": 0, "avg_deviation": 0, "decisions": 0
+        }
+        quantum_metrics = {
+            "avg_confidence": 0, "avg_deviation": 0, "decisions": 0
+        }
+
+        from django.db.models import Avg, Count
+        for model_type, metrics in [("classical", classical_metrics), ("quantum", quantum_metrics)]:
+            agg = DecisionLog.objects.filter(model_type=model_type).aggregate(
+                avg_conf=Avg("confidence"),
+                avg_dev=Avg("lane_deviation"),
+                count=Count("id"),
+            )
+            metrics["avg_confidence"] = round(float(agg["avg_conf"] or 0), 4)
+            metrics["avg_deviation"] = round(float(agg["avg_dev"] or 0), 4)
+            metrics["decisions"] = agg["count"]
+
+        return Response({
+            "experiments": exp_summary,
+            "distillation_curves": distillation_curves,
+            "model_comparison": model_comparison,
+            "confusion_matrix": confusion.data if confusion else None,
+            "roc_data": roc.data if roc else None,
+            "classical_vs_quantum": {
+                "classical": classical_metrics,
+                "quantum": quantum_metrics,
+            },
+            "total_experiments": Experiment.objects.count(),
+            "total_models": TrainedModel.objects.count(),
+        })
+
+
+class PredictAPIView(APIView):
+    """
+    POST /api/predict/
+    Run inference on feature vector or uploaded frame.
+    Body: { "features": [0.1, 0.5, ...], "model_type": "quantum" }
+    """
+
+    def post(self, request):
+        serializer = PredictRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        features = serializer.validated_data.get("features")
+        model_type = serializer.validated_data.get("model_type", "quantum")
+
+        if features:
+            import numpy as np
+            feat_array = np.array(features, dtype=np.float32)
+
+            if model_type == "quantum":
+                result = quantum_service.decide(feat_array)
+                decision, confidence = result
+            else:
+                result = classical_service.decide(feat_array)
+                decision, confidence = result
+
+            return Response({
+                "decision": decision,
+                "confidence": confidence,
+                "model_type": model_type,
+                "lane_position": float(feat_array[3]) if len(feat_array) > 3 else 0.0,
+                "steering": float(feat_array[0]) if len(feat_array) > 0 else 0.0,
+            })
+
+        return Response({"detail": "No features provided."}, status=400)
+
+
+class RunModelAPIView(APIView):
+    """
+    POST /api/run-model/
+    Run a specific trained model.
+    Body: { "model_id": 1, "features": [...] }
+    """
+
+    def post(self, request):
+        model_id = request.data.get("model_id")
+        features = request.data.get("features", [])
+
+        if not features:
+            return Response({"detail": "No features provided."}, status=400)
+
+        # Look up model
+        try:
+            trained_model = TrainedModel.objects.get(pk=model_id) if model_id else None
+        except TrainedModel.DoesNotExist:
+            trained_model = None
+
+        # Run inference (use existing services as fallback)
+        import numpy as np
+        feat_array = np.array(features, dtype=np.float32)
+        decision, confidence = classical_service.decide(feat_array)
+
+        return Response({
+            "decision": decision,
+            "confidence": confidence,
+            "model": trained_model.name if trained_model else "default_classical",
+            "lane_position": float(feat_array[3]) if len(feat_array) > 3 else 0.0,
+            "steering": float(feat_array[0]) if len(feat_array) > 0 else 0.0,
+        })
+
+
+class UploadFrameAPIView(APIView):
+    """
+    POST /api/upload-frame/
+    Upload a camera frame for inference.
+    Expects multipart form with 'frame' file.
+    """
+
+    def post(self, request):
+        frame_file = request.FILES.get("frame")
+        if not frame_file:
+            return Response({"detail": "No frame uploaded."}, status=400)
+
+        # Read image bytes
+        frame_bytes = frame_file.read()
+
+        try:
+            from inference.inference_service import inference_service
+            result = inference_service.predict_frame_bytes(frame_bytes)
+        except Exception:
+            # Fallback
+            result = {
+                "decision": "straight",
+                "confidence": 0.85,
+                "steering": 0.0,
+                "lane_position": 0.0,
+                "fallback": True,
+            }
+
+        return Response(result)

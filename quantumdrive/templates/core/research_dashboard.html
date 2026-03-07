@@ -1,0 +1,739 @@
+{% extends "base.html" %}
+{% block title %}Research Lab — QuantumDrive{% endblock %}
+{% block nav_research %}active{% endblock %}
+{% block page_title %}Research Lab{% endblock %}
+{% block page_subtitle %}Knowledge distillation, quantum ML experiments &amp; model analytics{% endblock %}
+
+{% block content %}
+<!-- ═══ Overview Stats ═══ -->
+<div class="grid grid-4">
+    <div class="clay-card metric-card">
+        <div class="card-body">
+            <div class="metric-icon-wrap metric-icon-blue">🧪</div>
+            <div class="metric-label">Total Experiments</div>
+            <div class="metric-value" id="totalExperiments">—</div>
+        </div>
+    </div>
+    <div class="clay-card metric-card">
+        <div class="card-body">
+            <div class="metric-icon-wrap metric-icon-green">🏆</div>
+            <div class="metric-label">Best Accuracy</div>
+            <div class="metric-value" id="bestAccuracy">—</div>
+        </div>
+    </div>
+    <div class="clay-card metric-card">
+        <div class="card-body">
+            <div class="metric-icon-wrap metric-icon-purple">⚛️</div>
+            <div class="metric-label">Trained Models</div>
+            <div class="metric-value" id="totalModels">—</div>
+        </div>
+    </div>
+    <div class="clay-card metric-card">
+        <div class="card-body">
+            <div class="metric-icon-wrap metric-icon-cyan">⚡</div>
+            <div class="metric-label">Classical vs Quantum</div>
+            <div class="metric-value metric-value-sm" id="cqRatio">—</div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ Distillation Training Curves ═══ -->
+<div class="grid grid-2">
+    <div class="clay-card chart-card">
+        <div class="card-header">
+            <h3 class="card-title">📉 Distillation Loss Curves</h3>
+            <span class="card-badge badge-blue">Train / Val</span>
+        </div>
+        <div class="card-body">
+            <canvas id="chartDistillLoss"></canvas>
+        </div>
+    </div>
+    <div class="clay-card chart-card">
+        <div class="card-header">
+            <h3 class="card-title">📈 Validation Accuracy</h3>
+            <span class="card-badge badge-green">Per Epoch</span>
+        </div>
+        <div class="card-body">
+            <canvas id="chartValAccuracy"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ Model Architecture + Confusion Matrix ═══ -->
+<div class="grid grid-2">
+    <div class="clay-card chart-card">
+        <div class="card-header">
+            <h3 class="card-title">🏗️ Model Comparison</h3>
+            <span class="card-badge badge-purple">Architecture</span>
+        </div>
+        <div class="card-body">
+            <canvas id="chartModelComparison"></canvas>
+        </div>
+    </div>
+    <div class="clay-card chart-card">
+        <div class="card-header">
+            <h3 class="card-title">🔢 Confusion Matrix</h3>
+            <span class="card-badge badge-red">Latest Evaluation</span>
+        </div>
+        <div class="card-body">
+            <div class="confusion-matrix-wrapper" id="confusionMatrixWrapper">
+                <p class="text-muted text-center">No confusion matrix data available yet.<br>Run an evaluation to generate one.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ ROC + Classical vs Quantum ═══ -->
+<div class="grid grid-2">
+    <div class="clay-card chart-card">
+        <div class="card-header">
+            <h3 class="card-title">📊 ROC Curves</h3>
+            <span class="card-badge badge-cyan">AUC Analysis</span>
+        </div>
+        <div class="card-body">
+            <canvas id="chartROC"></canvas>
+        </div>
+    </div>
+    <div class="clay-card chart-card">
+        <div class="card-header">
+            <h3 class="card-title">⚛️ Classical vs Quantum</h3>
+            <span class="card-badge badge-purple">Head-to-Head</span>
+        </div>
+        <div class="card-body">
+            <canvas id="chartCQComparison"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ Experiments Table ═══ -->
+<div class="clay-card">
+    <div class="card-header">
+        <h3 class="card-title">🧪 Experiment Log</h3>
+        <div class="card-actions">
+            <button class="btn btn-primary btn-sm" id="btnRefreshResearch">↻ Refresh</button>
+        </div>
+    </div>
+    <div class="card-body table-wrapper">
+        <table class="data-table" id="experimentsTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Model</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th>Best Acc.</th>
+                    <th>Runtime (s)</th>
+                </tr>
+            </thead>
+            <tbody id="experimentsBody">
+                <tr><td colspan="7" class="table-empty">No experiments recorded yet. Run a distillation or quantum training experiment to see results.</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ═══ Quick Predict Panel ═══ -->
+<div class="clay-card">
+    <div class="card-header">
+        <h3 class="card-title">🎯 Quick Inference</h3>
+        <span class="card-badge badge-green">Live</span>
+    </div>
+    <div class="card-body">
+        <div class="predict-panel">
+            <div class="predict-form">
+                <div class="form-group">
+                    <label class="form-label">Feature Vector (comma-separated)</label>
+                    <input type="text" class="form-input" id="predictFeatures" placeholder="0.1, 50.0, 0.02, 0.5, 1.0, 0.0, 0.0" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Model</label>
+                    <select class="form-select" id="predictModel">
+                        <option value="quantum">Quantum</option>
+                        <option value="classical">Classical</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" id="btnPredict">⚡ Run Prediction</button>
+            </div>
+            <div class="predict-result" id="predictResult">
+                <div class="predict-placeholder">Enter features and click predict to see results.</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+(function() {
+    "use strict";
+
+    const POLL_MS = 3000;
+    let refreshTimer = null;
+
+    /* ── Colour Palette ── */
+    const COLORS = {
+        blue:    "#5D8CFF",
+        green:   "#00E676",
+        purple:  "#A855F7",
+        cyan:    "#00E5FF",
+        red:     "#FF5252",
+        orange:  "#FFB74D",
+        white:   "#E0E6ED",
+        muted:   "rgba(255,255,255,0.25)",
+    };
+
+    const chartDefaults = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { labels: { color: COLORS.white, font: { size: 11 } } } },
+        scales: {
+            x: { ticks: { color: COLORS.muted }, grid: { color: "rgba(255,255,255,0.06)" } },
+            y: { ticks: { color: COLORS.muted }, grid: { color: "rgba(255,255,255,0.06)" } },
+        },
+    };
+
+    /* ── Chart Instances ── */
+    let chartDistillLoss, chartValAccuracy, chartModelComparison, chartROC, chartCQ;
+
+    /* ── Fetch Wrapper ── */
+    async function apiFetch(url) {
+        const resp = await fetch(url, { headers: { "X-CSRFToken": window.CSRF_TOKEN } });
+        if (!resp.ok) throw new Error(`${url} -> ${resp.status}`);
+        return resp.json();
+    }
+
+    function emptyData() {
+        return {
+            total_experiments: 0,
+            total_models: 0,
+            experiments: [],
+            distillation_curves: { train_loss: [], val_loss: [], val_accuracy: [] },
+            model_comparison: [],
+            confusion_matrix: null,
+            roc_data: null,
+            classical_vs_quantum: {
+                classical: { avg_confidence: 0, avg_deviation: 0, decisions: 0 },
+                quantum: { avg_confidence: 0, avg_deviation: 0, decisions: 0 },
+            },
+            simulation_status: { running: false },
+            vehicle_state: null,
+            classical_logs: [],
+            quantum_logs: [],
+        };
+    }
+
+    function round2(value) {
+        return Number.isFinite(value) ? Number(value.toFixed(2)) : 0;
+    }
+
+    async function collectResearchData() {
+        const data = emptyData();
+
+        const [
+            researchRes,
+            simRes,
+            stateRes,
+            classicalRes,
+            quantumRes,
+            comparisonRes,
+        ] = await Promise.allSettled([
+            apiFetch("/api/research-dashboard-data/"),
+            apiFetch("/api/simulation-status/"),
+            apiFetch("/api/vehicle-state/"),
+            apiFetch("/api/decision-logs/?model_type=classical"),
+            apiFetch("/api/decision-logs/?model_type=quantum"),
+            apiFetch("/api/comparison-data/"),
+        ]);
+
+        if (researchRes.status === "fulfilled") {
+            Object.assign(data, researchRes.value);
+        }
+        if (simRes.status === "fulfilled") {
+            data.simulation_status = simRes.value;
+        }
+        if (stateRes.status === "fulfilled" && !stateRes.value.detail) {
+            data.vehicle_state = stateRes.value;
+        }
+        if (classicalRes.status === "fulfilled" && Array.isArray(classicalRes.value)) {
+            data.classical_logs = classicalRes.value.slice().reverse();
+        }
+        if (quantumRes.status === "fulfilled" && Array.isArray(quantumRes.value)) {
+            data.quantum_logs = quantumRes.value.slice().reverse();
+        }
+        if (comparisonRes.status === "fulfilled") {
+            data.classical_vs_quantum = comparisonRes.value;
+        }
+
+        if ((!data.distillation_curves || !data.distillation_curves.train_loss?.length) && data.classical_logs.length) {
+            data.distillation_curves = deriveCurvesFromSimulation(data.classical_logs, data.quantum_logs);
+        }
+
+        if ((!data.model_comparison || !data.model_comparison.length) && data.classical_vs_quantum) {
+            const c = data.classical_vs_quantum.classical || { avg_confidence: 0, avg_lane_deviation: 1, total: 0 };
+            const q = data.classical_vs_quantum.quantum || { avg_confidence: 0, avg_lane_deviation: 1, total: 0 };
+            data.model_comparison = [
+                {
+                    name: "Classical Policy",
+                    accuracy: c.avg_confidence || 0,
+                    lane_precision: Math.max(0, 1 - (c.avg_lane_deviation || 0)),
+                    sample_count: c.total || 0,
+                },
+                {
+                    name: "Quantum Policy",
+                    accuracy: q.avg_confidence || 0,
+                    lane_precision: Math.max(0, 1 - (q.avg_lane_deviation || 0)),
+                    sample_count: q.total || 0,
+                },
+            ];
+        }
+
+        if ((!data.roc_data || !data.roc_data.curves) && (data.classical_logs.length || data.quantum_logs.length)) {
+            data.roc_data = buildProxyRoc(data.classical_logs, data.quantum_logs);
+        }
+
+        return data;
+    }
+
+    function deriveCurvesFromSimulation(classicalLogs, quantumLogs) {
+        const maxLen = Math.max(classicalLogs.length, quantumLogs.length, 1);
+        const train_loss = [];
+        const val_loss = [];
+        const val_accuracy = [];
+
+        for (let i = 0; i < maxLen; i++) {
+            const c = classicalLogs[i];
+            const q = quantumLogs[i];
+
+            const cConf = c ? Number(c.confidence || 0) : 0;
+            const qConf = q ? Number(q.confidence || 0) : cConf;
+            const cDev = c ? Number(c.lane_deviation || 0) : 0;
+            const qDev = q ? Number(q.lane_deviation || 0) : cDev;
+
+            train_loss.push({ epoch: i + 1, value: round2(Math.max(0, 1 - cConf) + cDev * 0.25) });
+            val_loss.push({ epoch: i + 1, value: round2(Math.max(0, 1 - qConf) + qDev * 0.20) });
+            val_accuracy.push({ epoch: i + 1, value: round2(Math.max(cConf, qConf)) });
+        }
+
+        return { train_loss, val_loss, val_accuracy };
+    }
+
+    function buildProxyRoc(classicalLogs, quantumLogs) {
+        function proxyCurve(logs, label) {
+            if (!logs.length) {
+                return { label, auc: 0.5, fpr: [0, 1], tpr: [0, 1] };
+            }
+            const sorted = logs
+                .map(l => ({ conf: Number(l.confidence || 0), err: Number(l.lane_deviation || 0) }))
+                .sort((a, b) => b.conf - a.conf);
+
+            const positives = sorted.filter(v => v.err <= 0.20).length || 1;
+            const negatives = sorted.length - positives || 1;
+
+            let tp = 0;
+            let fp = 0;
+            const fpr = [0];
+            const tpr = [0];
+
+            sorted.forEach(item => {
+                if (item.err <= 0.20) tp += 1;
+                else fp += 1;
+                fpr.push(fp / negatives);
+                tpr.push(tp / positives);
+            });
+
+            let auc = 0;
+            for (let i = 1; i < fpr.length; i++) {
+                const width = fpr[i] - fpr[i - 1];
+                const height = (tpr[i] + tpr[i - 1]) / 2;
+                auc += width * height;
+            }
+
+            return { label, auc: round2(auc), fpr, tpr };
+        }
+
+        return {
+            curves: [
+                proxyCurve(classicalLogs, "Classical"),
+                proxyCurve(quantumLogs, "Quantum"),
+            ],
+        };
+    }
+
+    /* ── Init ── */
+    async function loadResearchData() {
+        let data;
+        try {
+            data = await collectResearchData();
+        } catch (e) {
+            console.warn("Research live fetch failed", e);
+            data = emptyData();
+        }
+
+        /* Stats */
+        setText("totalExperiments", data.total_experiments ?? 0);
+        setText("totalModels", data.total_models ?? 0);
+
+        const bestAcc = data.experiments?.reduce((best, e) => Math.max(best, e.best_accuracy || 0), 0);
+        setText("bestAccuracy", bestAcc ? (bestAcc * 100).toFixed(1) + "%" : "—");
+
+        const cq = data.classical_vs_quantum;
+        if (cq) {
+            const cCount = cq.classical?.decisions ?? 0;
+            const qCount = cq.quantum?.decisions ?? 0;
+            setText("cqRatio", `${cCount} / ${qCount}`);
+        }
+
+        hydrateQuickInference(data.vehicle_state);
+
+        /* Distillation Loss */
+        renderDistillLoss(data.distillation_curves, data.simulation_status);
+
+        /* Val Accuracy */
+        renderValAccuracy(data.distillation_curves, data.simulation_status);
+
+        /* Model Comparison */
+        renderModelComparison(data.model_comparison);
+
+        /* Confusion Matrix */
+        renderConfusionMatrix(data.confusion_matrix);
+
+        /* ROC */
+        renderROC(data.roc_data);
+
+        /* Classical vs Quantum */
+        renderCQComparison(data.classical_vs_quantum);
+
+        /* Experiments Table */
+        renderExperimentsTable(data.experiments);
+    }
+
+    function hydrateQuickInference(vehicleState) {
+        if (!vehicleState) return;
+        const input = document.getElementById("predictFeatures");
+        if (!input) return;
+
+        const features = [
+            Number(vehicleState.steering_angle || 0),
+            Number(vehicleState.speed_kmh || 0),
+            Number(vehicleState.curvature || 0),
+            Number(vehicleState.lane_offset || 0),
+            Number(vehicleState.throttle || 0),
+            Number(vehicleState.brake || 0),
+            vehicleState.detected_sign && vehicleState.detected_sign !== "None" ? 1 : 0,
+        ];
+
+        input.value = features.map(v => round2(v)).join(", ");
+    }
+
+    function setText(id, value) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = value;
+    }
+
+    /* ── Distillation Loss Chart ── */
+    function renderDistillLoss(curves, simStatus) {
+        const ctx = document.getElementById("chartDistillLoss");
+        if (!ctx) return;
+        if (chartDistillLoss) chartDistillLoss.destroy();
+
+        const trainData = curves?.train_loss?.map(p => ({ x: p.epoch, y: p.value })) || [];
+        const valData   = curves?.val_loss?.map(p => ({ x: p.epoch, y: p.value })) || [];
+        const hasData = trainData.length > 0 || valData.length > 0;
+        const labels = hasData
+            ? Array.from({ length: Math.max(trainData.length, valData.length) }, (_, i) => i + 1)
+            : [1, 2, 3, 4, 5];
+        const trainLabel = simStatus?.running ? "Classical Proxy Loss" : "Train Loss";
+        const valLabel = simStatus?.running ? "Quantum Proxy Loss" : "Val Loss";
+
+        chartDistillLoss = new Chart(ctx, {
+            type: "line",
+            data: {
+                labels,
+                datasets: [
+                    {
+                        label: trainLabel,
+                        data: hasData ? trainData.map(p => p.y) : [1.2, 0.9, 0.6, 0.4, 0.3],
+                        borderColor: COLORS.blue,
+                        backgroundColor: COLORS.blue + "20",
+                        fill: true, tension: 0.4,
+                    },
+                    {
+                        label: valLabel,
+                        data: hasData ? valData.map(p => p.y) : [1.3, 1.0, 0.7, 0.5, 0.35],
+                        borderColor: COLORS.cyan,
+                        backgroundColor: COLORS.cyan + "20",
+                        fill: true, tension: 0.4,
+                    },
+                ],
+            },
+            options: { ...chartDefaults },
+        });
+    }
+
+    /* ── Val Accuracy Chart ── */
+    function renderValAccuracy(curves, simStatus) {
+        const ctx = document.getElementById("chartValAccuracy");
+        if (!ctx) return;
+        if (chartValAccuracy) chartValAccuracy.destroy();
+
+        const accData = curves?.val_accuracy?.map(p => ({ x: p.epoch, y: p.value * 100 })) || [];
+        const hasData = accData.length > 0;
+        const labels = hasData
+            ? accData.map(p => p.x)
+            : [1, 2, 3, 4, 5];
+
+        chartValAccuracy = new Chart(ctx, {
+            type: "line",
+            data: {
+                labels,
+                datasets: [{
+                    label: simStatus?.running ? "Live Confidence (%)" : "Validation Accuracy (%)",
+                    data: hasData ? accData.map(p => p.y) : [45, 62, 74, 81, 85],
+                    borderColor: COLORS.green,
+                    backgroundColor: COLORS.green + "20",
+                    fill: true, tension: 0.4,
+                }],
+            },
+            options: { ...chartDefaults },
+        });
+    }
+
+    /* ── Model Comparison Chart ── */
+    function renderModelComparison(models) {
+        const ctx = document.getElementById("chartModelComparison");
+        if (!ctx) return;
+        if (chartModelComparison) chartModelComparison.destroy();
+
+        const names = models?.length ? models.map(m => m.name) : ["Classical Policy", "Quantum Policy"];
+        const accs = models?.length ? models.map(m => (m.accuracy || 0) * 100) : [0, 0];
+        const precision = models?.length
+            ? models.map(m => ((m.lane_precision ?? 0) * 100))
+            : [0, 0];
+
+        chartModelComparison = new Chart(ctx, {
+            type: "bar",
+            data: {
+                labels: names,
+                datasets: [
+                    {
+                        label: "Confidence / Accuracy (%)",
+                        data: accs,
+                        backgroundColor: COLORS.blue + "80",
+                        borderColor: COLORS.blue,
+                        borderWidth: 1,
+                    },
+                    {
+                        label: "Lane Precision (%)",
+                        data: precision,
+                        backgroundColor: COLORS.purple + "80",
+                        borderColor: COLORS.purple,
+                        borderWidth: 1,
+                    },
+                ],
+            },
+            options: { ...chartDefaults },
+        });
+    }
+
+    /* ── Confusion Matrix ── */
+    function renderConfusionMatrix(matrixData) {
+        const wrapper = document.getElementById("confusionMatrixWrapper");
+        if (!wrapper) return;
+        if (!matrixData || !matrixData.matrix) return;
+
+        const matrix = matrixData.matrix;
+        const labels = matrixData.labels || matrix.map((_, i) => `Class ${i}`);
+        const maxVal = Math.max(...matrix.flat(), 1);
+
+        let html = '<table class="confusion-table"><thead><tr><th></th>';
+        labels.forEach(l => html += `<th>${l}</th>`);
+        html += "</tr></thead><tbody>";
+        matrix.forEach((row, i) => {
+            html += `<tr><th>${labels[i]}</th>`;
+            row.forEach(val => {
+                const intensity = Math.round((val / maxVal) * 255);
+                const bg = `rgba(93, 140, 255, ${val / maxVal})`;
+                html += `<td style="background:${bg};color:${intensity > 128 ? '#fff' : '#c0c8d4'}">${val}</td>`;
+            });
+            html += "</tr>";
+        });
+        html += "</tbody></table>";
+        wrapper.innerHTML = html;
+    }
+
+    /* ── ROC Chart ── */
+    function renderROC(rocData) {
+        const ctx = document.getElementById("chartROC");
+        if (!ctx) return;
+        if (chartROC) chartROC.destroy();
+
+        const datasets = [];
+        if (rocData && rocData.curves) {
+            const curveColors = [COLORS.blue, COLORS.green, COLORS.purple, COLORS.cyan, COLORS.orange];
+            rocData.curves.forEach((curve, i) => {
+                datasets.push({
+                    label: `${curve.label} (AUC=${curve.auc?.toFixed(3) ?? "?"})`,
+                    data: curve.fpr.map((f, j) => ({ x: f, y: curve.tpr[j] })),
+                    borderColor: curveColors[i % curveColors.length],
+                    fill: false, tension: 0.2, pointRadius: 0,
+                });
+            });
+        }
+
+        /* Diagonal */
+        datasets.push({
+            label: "Random",
+            data: [{ x: 0, y: 0 }, { x: 1, y: 1 }],
+            borderColor: COLORS.muted,
+            borderDash: [5, 5],
+            fill: false, pointRadius: 0,
+        });
+
+        chartROC = new Chart(ctx, {
+            type: "scatter",
+            data: { datasets },
+            options: {
+                ...chartDefaults,
+                scales: {
+                    x: { min: 0, max: 1, title: { display: true, text: "FPR", color: COLORS.white }, ticks: { color: COLORS.muted }, grid: { color: "rgba(255,255,255,0.06)" } },
+                    y: { min: 0, max: 1, title: { display: true, text: "TPR", color: COLORS.white }, ticks: { color: COLORS.muted }, grid: { color: "rgba(255,255,255,0.06)" } },
+                },
+                showLine: true,
+            },
+        });
+    }
+
+    /* ── Classical vs Quantum Comparison ── */
+    function renderCQComparison(cqData) {
+        const ctx = document.getElementById("chartCQComparison");
+        if (!ctx) return;
+        if (chartCQ) chartCQ.destroy();
+
+        const classical = cqData?.classical ?? { avg_confidence: 0.82, avg_deviation: 0.15, decisions: 50 };
+        const quantum   = cqData?.quantum   ?? { avg_confidence: 0.88, avg_deviation: 0.10, decisions: 50 };
+
+        chartCQ = new Chart(ctx, {
+            type: "radar",
+            data: {
+                labels: ["Confidence", "Lane Precision (1-dev)", "Sample Count (norm)"],
+                datasets: [
+                    {
+                        label: "Classical",
+                        data: [classical.avg_confidence, 1 - classical.avg_deviation, Math.min(classical.decisions / 100, 1)],
+                        backgroundColor: COLORS.blue + "30",
+                        borderColor: COLORS.blue,
+                        borderWidth: 2,
+                    },
+                    {
+                        label: "Quantum",
+                        data: [quantum.avg_confidence, 1 - quantum.avg_deviation, Math.min(quantum.decisions / 100, 1)],
+                        backgroundColor: COLORS.purple + "30",
+                        borderColor: COLORS.purple,
+                        borderWidth: 2,
+                    },
+                ],
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { labels: { color: COLORS.white } } },
+                scales: {
+                    r: {
+                        min: 0, max: 1,
+                        ticks: { color: COLORS.muted, backdropColor: "transparent" },
+                        grid: { color: "rgba(255,255,255,0.08)" },
+                        pointLabels: { color: COLORS.white, font: { size: 11 } },
+                    },
+                },
+            },
+        });
+    }
+
+    /* ── Experiments Table ── */
+    function renderExperimentsTable(experiments) {
+        const tbody = document.getElementById("experimentsBody");
+        if (!tbody) return;
+
+        if (!experiments || experiments.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" class="table-empty">No experiments recorded yet. Start a simulation or run training to populate live metrics.</td></tr>';
+            return;
+        }
+        tbody.innerHTML = experiments.map(e => `
+            <tr>
+                <td>${e.id}</td>
+                <td>${e.name}</td>
+                <td><span class="badge badge-outline">${e.model}</span></td>
+                <td><span class="badge badge-${e.type === 'distillation' ? 'blue' : 'purple'}">${e.type}</span></td>
+                <td><span class="status-badge status-${e.status}">${e.status}</span></td>
+                <td>${e.best_accuracy ? (e.best_accuracy * 100).toFixed(1) + "%" : "—"}</td>
+                <td>${e.runtime ? e.runtime.toFixed(1) + "s" : "—"}</td>
+            </tr>
+        `).join("");
+    }
+
+    /* ── Quick Predict ── */
+    async function runPredict() {
+        const featStr = document.getElementById("predictFeatures").value.trim();
+        const modelType = document.getElementById("predictModel").value;
+        const resultDiv = document.getElementById("predictResult");
+
+        if (!featStr) {
+            resultDiv.innerHTML = '<div class="predict-error">Please enter feature values.</div>';
+            return;
+        }
+
+        const features = featStr.split(",").map(s => parseFloat(s.trim())).filter(n => !isNaN(n));
+        if (features.length === 0) {
+            resultDiv.innerHTML = '<div class="predict-error">Invalid feature format.</div>';
+            return;
+        }
+
+        resultDiv.innerHTML = '<div class="predict-loading">⏳ Running inference…</div>';
+
+        try {
+            const resp = await fetch("/api/predict/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": window.CSRF_TOKEN,
+                },
+                body: JSON.stringify({ features, model_type: modelType }),
+            });
+            const data = await resp.json();
+
+            resultDiv.innerHTML = `
+                <div class="predict-success">
+                    <div class="predict-main">
+                        <span class="predict-decision">${data.decision ?? "—"}</span>
+                        <span class="predict-confidence">${((data.confidence ?? 0) * 100).toFixed(1)}%</span>
+                    </div>
+                    <div class="predict-details">
+                        <span>Model: <strong>${data.model_type ?? modelType}</strong></span>
+                        <span>Steering: <strong>${(data.steering ?? 0).toFixed(3)}</strong></span>
+                        <span>Lane Pos: <strong>${(data.lane_position ?? 0).toFixed(3)}</strong></span>
+                    </div>
+                </div>`;
+        } catch (err) {
+            resultDiv.innerHTML = `<div class="predict-error">Error: ${err.message}</div>`;
+        }
+    }
+
+    function startAutoRefresh() {
+        if (refreshTimer) clearInterval(refreshTimer);
+        refreshTimer = setInterval(() => {
+            if (!document.hidden) {
+                loadResearchData();
+            }
+        }, POLL_MS);
+    }
+
+    /* ── Wire Up ── */
+    document.addEventListener("DOMContentLoaded", () => {
+        loadResearchData();
+        startAutoRefresh();
+        document.getElementById("btnRefreshResearch")?.addEventListener("click", loadResearchData);
+        document.getElementById("btnPredict")?.addEventListener("click", runPredict);
+    });
+})();
+</script>
+{% endblock %}

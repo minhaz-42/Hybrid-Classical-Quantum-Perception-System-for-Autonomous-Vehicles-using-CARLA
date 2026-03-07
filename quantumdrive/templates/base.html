@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=20260306">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     {% block extra_head %}{% endblock %}
 </head>
@@ -47,6 +47,12 @@
             <a href="{% url 'core:comparison' %}" class="nav-item {% block nav_comparison %}{% endblock %}">
                 <span class="nav-icon">⚖️</span>
                 <span class="nav-label">Model Comparison</span>
+            </a>
+
+            <div class="nav-section-label">Research</div>
+            <a href="{% url 'core:research_dashboard' %}" class="nav-item {% block nav_research %}{% endblock %}">
+                <span class="nav-icon">🔬</span>
+                <span class="nav-label">Research Lab</span>
             </a>
 
             <div class="nav-section-label">Account</div>
@@ -127,7 +133,7 @@
     <script>
         window.CSRF_TOKEN = "{{ csrf_token }}";
     </script>
-    <script src="{% static 'js/app.js' %}"></script>
+    <script src="{% static 'js/app.js' %}?v=20260306"></script>
     {% block extra_scripts %}{% endblock %}
 </body>
 </html>

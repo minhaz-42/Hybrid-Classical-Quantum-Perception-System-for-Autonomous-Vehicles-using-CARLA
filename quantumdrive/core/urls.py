@@ -52,6 +52,7 @@ urlpatterns = [
     path("settings/", views.SettingsView.as_view(), name="settings"),
     path("help/", views.HelpView.as_view(), name="help"),
     path("profile/", views.ProfileView.as_view(), name="profile"),
+    path("research/", views.ResearchDashboardView.as_view(), name="research_dashboard"),
 
     # ── REST API ─────────────────────────────────────────────────────────
     path("api/vehicle-state/", views.VehicleStateAPIView.as_view(), name="api-vehicle-state"),
@@ -64,4 +65,15 @@ urlpatterns = [
     path("api/comparison-data/", views.ComparisonDataAPIView.as_view(), name="api-comparison-data"),
     path("api/analytics-data/", views.AnalyticsDataAPIView.as_view(), name="api-analytics-data"),
     path("api/export-csv/", views.ExportCSVView.as_view(), name="api-export-csv"),
+
+    # ── Research & ML API ────────────────────────────────────────────────
+    path("api/experiments/", views.ExperimentListAPIView.as_view(), name="api-experiments"),
+    path("api/experiments/<int:pk>/", views.ExperimentDetailAPIView.as_view(), name="api-experiment-detail"),
+    path("api/experiment-results/", views.ExperimentResultsAPIView.as_view(), name="api-experiment-results"),
+    path("api/trained-models/", views.TrainedModelListAPIView.as_view(), name="api-trained-models"),
+    path("api/research-metrics/", views.ResearchMetricsAPIView.as_view(), name="api-research-metrics"),
+    path("api/research-dashboard-data/", views.ResearchDashboardDataAPIView.as_view(), name="api-research-dashboard-data"),
+    path("api/predict/", views.PredictAPIView.as_view(), name="api-predict"),
+    path("api/run-model/", views.RunModelAPIView.as_view(), name="api-run-model"),
+    path("api/upload-frame/", views.UploadFrameAPIView.as_view(), name="api-upload-frame"),
 ]
